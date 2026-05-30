@@ -100,19 +100,22 @@ jobs:
 
       - name: Fetch the Swagger Document
         run: |
-          curl -fo api.yaml http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
-          test -f api.yaml
+          curl -f api.yaml http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
           cat api.yaml
+
+          curl -fo api.json http://localhost:${{env.FAKE_APP_PORT}}/docs-json
           mkdir sdk
 
       - name: Generates sdk
         uses: bjerkio/swagger-codegen-action@master
         with:
-          args: generate
-            -c ./api.yaml
-            -o sdk
-            -l typescript-node
-      
+          args: |
+            generate
+              -i ./api.json
+              -o sdk
+              -l typescript-node
+              --release-note "API Version: ${{needs.check-version.outputs.target_version}}"
+
       - name: Ensure sdk has been generated
         run: |
           test -z "$(ls -A sdk)"
