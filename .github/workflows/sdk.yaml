@@ -65,20 +65,13 @@ jobs:
         with:
           repository: ${{env.API_REPOSITORY}}
           ref: ${{env.API_BRANCH}}
-
-      - name: Setup env variables
-        uses: cardinalby/export-env-action@v2
-        with:
-          # Exists in the api repository
-          envFile: ".github/workflows/ci.env"
-          expand: true
-          export: true
+          path: api
 
       # Used for postgres to access it
-      - name: Generate en_US.UTF-8 locale
-        run: |
-          sudo locale-gen en_US.UTF-8
-          sudo update-locale LANG=en_US.UTF-8
+      # - name: Generate en_US.UTF-8 locale
+      #   run: |
+      #     sudo locale-gen en_US.UTF-8
+      #     sudo update-locale LANG=en_US.UTF-8
 
       - name: Setup a postgres db
         uses: ikalnytskyi/action-setup-postgres@v8
@@ -91,18 +84,31 @@ jobs:
       - name: Installing bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Installing deps
-        run: bun install
+      - name: Setup env variables
+        uses: cardinalby/export-env-action@v2
+        with:
+          # Exists in the api repository
+          envFile: "api/.github/workflows/ci.env"
+          expand: true
+          export: true
 
-      - name: Launch API
-        env:
-          APP_PORT: ${{env.FAKE_APP_PORT}}
-        run: bun start & sleep 1
+      - name: Launching API
+        run: |
+          cd api
+          bun install
+          bun start &
+          echo "API_PID=$!" >> $GITHUB_ENV
+          sleep 1
 
       - name: Fetch the Swagger Document
         run: |
           curl -f api.yaml http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
           curl -fso api.json http://localhost:${{env.FAKE_APP_PORT}}/docs-json
+      
+      - name: Stopping API and preparing for SDK generation
+        run: |
+          kill $API_PID
+          rm -rf api
           mkdir sdk
 
       - name: Generates sdk
