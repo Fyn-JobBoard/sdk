@@ -59,11 +59,6 @@ jobs:
     needs: check-version
     runs-on: ubuntu-latest
     if: ! needs.check-version.outputs.same_version
-    services:
-      docker:
-        image: swaggerapi/swagger-codegen-cli
-        ports:
-          - 3000:3000
     steps:
       - uses: actions/checkout@v6
         with:
@@ -103,15 +98,16 @@ jobs:
           APP_PORT: ${{env.FAKE_APP_PORT}}
         run: bun start & sleep 2
 
-      - name: Debug SDK
+      - name: Debug and fetch SDK
         run: |
-          curl http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
+          curl -f http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
+          curl http://localhost:${{env.FAKE_APP_PORT}}/docs-json -o api.json
 
       - name: Generates sdk
         uses: bjerkio/swagger-codegen-action@master
         with:
           args: generate
-            -i "http://localhost:${{env.FAKE_APP_PORT}}/docs-json"
+            -i ./api.json
             -o sdk
             -l typescript-node
 
