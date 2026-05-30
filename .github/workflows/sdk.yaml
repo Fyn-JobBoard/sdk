@@ -75,12 +75,6 @@ jobs:
           expand: true
           export: true
 
-      # Used for postgres to access it
-      # - name: Generate en_US.UTF-8 locale
-      #   run: |
-      #     sudo locale-gen en_US.UTF-8
-      #     sudo update-locale LANG=en_US.UTF-8
-
       - name: Setup a postgres db
         uses: ikalnytskyi/action-setup-postgres@v8
         with:
@@ -105,7 +99,7 @@ jobs:
           curl -f api.yaml http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
           curl -fso api.json http://localhost:${{env.FAKE_APP_PORT}}/docs-json
 
-      - name: Stopping API and preparing for SDK generation
+      - name: Stop API and prepare for SDK generation
         run: |
           kill $API_PID
           rm -rf api
@@ -124,18 +118,22 @@ jobs:
         run: |
           test -n "$(ls -A sdk)"
 
-      - uses: actions/checkout@v6
+      - name: Fetch templates
+        uses: actions/checkout@v6
         with:
-          repository: ${{github.repository}}
           ref: main
           clean: false
           path: templates
           sparse-checkout: |
             .github/workflows/templates
 
+      - name: Clean template folder
+        run: |
+          mv templates/{github/workflows/templates/*,.}
+          rm -rf templates/.github
+
       - name: Create the package.json file
         run: |
-          ls -AR
           jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' templates/package.json > sdk/package.json
 
       - name: Exporting sdk to branch ${{needs.check-version.outputs.target_version}}
