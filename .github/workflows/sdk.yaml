@@ -127,9 +127,9 @@ jobs:
           sparse-checkout: |
             .github/workflows/templates
 
-      - name: Clean template folder
+      - name: Clean templates folder
         run: |
-          mv templates/{github/workflows/templates/*,.}
+          mv templates/{.github/workflows/templates/*,.}
           rm -rf templates/.github
 
       - name: Create the package.json file
