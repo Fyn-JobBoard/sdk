@@ -106,6 +106,7 @@ jobs:
         uses: bjerkio/swagger-codegen-action@master
         with:
           args:
+            generate
             -i "http://localhost:${{env.FAKE_APP_PORT}}/docs-json"
             -o sdk
             -l typescript-node
