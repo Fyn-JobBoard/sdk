@@ -97,7 +97,7 @@ jobs:
       - name: Launch API
         env:
           APP_PORT: ${{env.FAKE_APP_PORT}}
-        run: bun start & sleep 2
+        run: bun start & sleep 1
 
       - name: Fetch the Swagger Document
         run: |
@@ -123,12 +123,14 @@ jobs:
           repository: ${{github.repository}}
           ref: main
           clean: false
+          path: templates
           sparse-checkout: |
-            .github
+            .github/workflows/templates
 
       - name: Create the package.json file
         run: |
-          jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' .github/workflows/templates/package.json > sdk/package.json
+          ls -AR
+          jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' templates/package.json > sdk/package.json
 
       - name: Exporting sdk to branch ${{needs.check-version.outputs.target_version}}
         uses: ad-m/github-push-action@master
