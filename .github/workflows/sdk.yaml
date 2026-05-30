@@ -109,7 +109,7 @@ jobs:
         uses: bjerkio/swagger-codegen-action@master
         with:
           args: generate
-            -i ./api.yaml
+            -c ./api.yaml
             -o sdk
             -l typescript-node
       
