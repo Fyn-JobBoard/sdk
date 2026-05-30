@@ -106,9 +106,9 @@ jobs:
         uses: bjerkio/swagger-codegen-action@master
         with:
           args:
-            -i http://localhost:${{env.FAKE_APP_PORT}}/docs-json
+            -i "http://localhost:${{env.FAKE_APP_PORT}}/docs-json"
             -o sdk
-            -l typescript
+            -l typescript-node
 
       - name: Exporting sdk to ${{needs.check-version.outputs.target_version}}
         uses: ad-m/github-push-action@master
