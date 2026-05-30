@@ -115,10 +115,9 @@ jobs:
 
       - name: Ensure sdk has been generated
         run: |
-          ls -A sdk
-          test -z "$(ls -A sdk)"
+          test -n "$(ls -A sdk)"
 
-      - name: Exporting sdk to ${{needs.check-version.outputs.target_version}}
+      - name: Exporting sdk to branch ${{needs.check-version.outputs.target_version}}
         uses: ad-m/github-push-action@master
         with:
           branch: v${{needs.check-version.outputs.target_version}}
