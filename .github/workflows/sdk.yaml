@@ -98,17 +98,18 @@ jobs:
           APP_PORT: ${{env.FAKE_APP_PORT}}
         run: bun start & sleep 2
 
-      - name: Debug and fetch SDK
+      - name: Fetch the Swagger Document
         run: |
-          curl -f http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
-          curl http://localhost:${{env.FAKE_APP_PORT}}/docs-json -o api.json
+          curl -fo api.yaml http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
+          test -f api.yaml
+          cat api.yaml
           mkdir sdk
 
       - name: Generates sdk
         uses: bjerkio/swagger-codegen-action@master
         with:
           args: generate
-            -i ./api.json
+            -i ./api.yaml
             -o sdk
             -l typescript-node
       
