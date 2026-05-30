@@ -110,7 +110,7 @@ jobs:
           args: 'generate
             -i ./api.json
             -o sdk
-            -l typescript-node
+            -l typescript-fetch
             --release-note "API Version: ${{needs.check-version.outputs.target_version}}"'
 
       - name: Ensure sdk has been generated
