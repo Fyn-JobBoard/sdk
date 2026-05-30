@@ -136,6 +136,12 @@ jobs:
         run: |
           jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' templates/package.json > sdk/package.json
 
+      - name: Prepare for branch push
+        run: |
+          rm -rf .git
+          git init
+          git remote add origin ${{github.repositoryUrl}}
+
       - name: Exporting sdk to branch ${{needs.check-version.outputs.target_version}}
         uses: ad-m/github-push-action@master
         with:
