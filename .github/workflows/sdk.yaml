@@ -115,6 +115,7 @@ jobs:
 
       - name: Ensure sdk has been generated
         run: |
+          ls -A sdk
           test -z "$(ls -A sdk)"
 
       - name: Exporting sdk to ${{needs.check-version.outputs.target_version}}
