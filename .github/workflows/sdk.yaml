@@ -105,7 +105,7 @@ jobs:
           mkdir sdk
 
       - name: Generates sdk
-        uses: bjerkio/swagger-codegen-action@master
+        uses: johan-jnn/swagger-codegen-v3-action@master
         with:
           args: 'generate
             -i ./api.json
