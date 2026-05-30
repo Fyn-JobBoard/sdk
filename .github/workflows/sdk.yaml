@@ -63,7 +63,7 @@ jobs:
       docker:
         image: swaggerapi/swagger-codegen-cli
         ports:
-          - $FAKE_APP_PORT:$FAKE_APP_PORT
+          - ${FAKE_APP_PORT}:${FAKE_APP_PORT}
     steps:
       - uses: actions/checkout@v6
         with:
