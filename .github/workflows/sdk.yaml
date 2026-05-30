@@ -1,0 +1,96 @@
+name: Generate sdk from api
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        type: string
+        default: main
+        description: The branch in the api repository that contains the swagger implementation
+
+env:
+  API_REPOSITORY: Fyn-JobBoard/api
+  FAKE_APP_PORT: 3000
+
+jobs:
+  check-version:
+    name: Verify versions
+    runs-on: ubuntu-latest
+    outputs:
+      same_version: ${{steps.incomming.outputs.VERSION == steps.current.outputs.VERSION}}
+      target_version: ${{steps.incomming.outputs.VERSION}}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+      - id: current
+        run: |
+          if [ -f "./package.json" ];
+            echo "VERSION=$(jq .version -r ./package.json)" >> $GITHUB_OUTPUT
+          fi
+      - uses: actions/checkout@v3
+        with:
+          repository: ${{env.API_REPOSITORY}}
+          ref: ${{inputs.branch}}
+      - id: incomming
+        run: |
+          if [ -f "./package.json" ];
+          then
+            echo "VERSION=$(jq .version -r ./package.json)" >> $GITHUB_OUTPUT
+          fi
+
+  generate-sdk:
+    name: Generate the sdk for version ${{needs.check-version.outputs.target_version}}
+    needs: check-version
+    runs-on: ubuntu-slim
+    if: ! needs.check-version.outputs.same_version
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: ${{env.API_REPOSITORY}}
+          ref: ${{inputs.branch}}
+
+      - name: Setup env variables
+        uses: cardinalby/export-env-action@v2
+        with:
+          # Exists in the api repository
+          envFile: ".github/workflows/ci.env"
+          expand: true
+          export: true
+
+      # Used for postgres to access it
+      - name: Generate en_US.UTF-8 locale
+        run: |
+          sudo locale-gen en_US.UTF-8
+          sudo update-locale LANG=en_US.UTF-8
+
+      - name: Setup a postgres db
+        uses: ikalnytskyi/action-setup-postgres@v8
+        with:
+          database: ${{ env.DB_DATABASE }}
+          password: ${{ env.DB_PASSWORD }}
+          username: ${{ env.DB_USERNAME }}
+          port: ${{ env.DB_PORT }}
+
+      - name: Installing bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Installing deps
+        run: bun install
+
+      - name: Launch API
+        env:
+          APP_PORT: ${{env.FAKE_APP_PORT}}
+        run: bun start & sleep 2
+
+      - name: Generates sdk
+        uses: bjerkio/swagger-codegen-action@master
+        with:
+          i: "http://localhost:${{env.FAKE_APP_PORT}}/docs-json"
+          output: sdk
+          lang: typescript
+
+      - name: Exporting sdk to ${{needs.check-version.outputs.target_version}}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: v${{needs.check-version.outputs.target_version}}
+          directory: sdk
