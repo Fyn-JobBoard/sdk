@@ -57,7 +57,7 @@ jobs:
   generate-sdk:
     name: Generate the sdk for version ${{needs.check-version.outputs.target_version}}
     needs: check-version
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     if: ! needs.check-version.outputs.same_version
     steps:
       - uses: actions/checkout@v3
