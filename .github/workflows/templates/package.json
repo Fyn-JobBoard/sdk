@@ -1,0 +1,8 @@
+{
+  "name": "fyn-api-sdk",
+  "description": "The fyn's API SDK",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fyn-JobBoard/sdk"
+  }
+}

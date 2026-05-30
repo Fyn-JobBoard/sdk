@@ -58,6 +58,7 @@ jobs:
     name: Generate the sdk for version ${{needs.check-version.outputs.target_version}}
     needs: check-version
     runs-on: ubuntu-latest
+    permissions: write-all
     if: ! needs.check-version.outputs.same_version
     steps:
       - uses: actions/checkout@v6
@@ -116,6 +117,10 @@ jobs:
       - name: Ensure sdk has been generated
         run: |
           test -n "$(ls -A sdk)"
+
+      - name: Create the package.json file
+        run: |
+          jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' .github/workflows/templates/package.json > sdk/package.json
 
       - name: Exporting sdk to branch ${{needs.check-version.outputs.target_version}}
         uses: ad-m/github-push-action@master
