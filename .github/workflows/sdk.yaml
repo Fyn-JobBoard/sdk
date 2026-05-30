@@ -101,9 +101,7 @@ jobs:
       - name: Fetch the Swagger Document
         run: |
           curl -f api.yaml http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
-          cat api.yaml
-
-          curl -fo api.json http://localhost:${{env.FAKE_APP_PORT}}/docs-json
+          curl -fso api.json http://localhost:${{env.FAKE_APP_PORT}}/docs-json
           mkdir sdk
 
       - name: Generates sdk
