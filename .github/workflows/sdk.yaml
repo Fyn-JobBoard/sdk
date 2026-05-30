@@ -1,20 +1,35 @@
 name: Generate sdk from api
 on:
+  # On user trigger
   workflow_dispatch:
     inputs:
       branch:
         type: string
         default: main
+        required: true
         description: The branch in the api repository that contains the swagger implementation
+  # On external trigger
+  workflow_call:
+    inputs:
+      branch:
+        type: string
+        default: main
+        required: true
+        description: The branch in the api repository that contains the swagger implementation
+  # On workflow file changes
+  push:
+    branches:
+      - main
 
 env:
   API_REPOSITORY: Fyn-JobBoard/api
+  API_BRANCH: ${{inputs.branch || 'main'}}
   FAKE_APP_PORT: 3000
 
 jobs:
   check-version:
     name: Verify versions
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       same_version: ${{steps.incomming.outputs.VERSION == steps.current.outputs.VERSION}}
       target_version: ${{steps.incomming.outputs.VERSION}}
@@ -25,12 +40,13 @@ jobs:
       - id: current
         run: |
           if [ -f "./package.json" ];
+          then
             echo "VERSION=$(jq .version -r ./package.json)" >> $GITHUB_OUTPUT
           fi
       - uses: actions/checkout@v3
         with:
           repository: ${{env.API_REPOSITORY}}
-          ref: ${{inputs.branch}}
+          ref: ${{env.API_BRANCH}}
       - id: incomming
         run: |
           if [ -f "./package.json" ];
@@ -47,7 +63,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: ${{env.API_REPOSITORY}}
-          ref: ${{inputs.branch}}
+          ref: ${{env.API_BRANCH}}
 
       - name: Setup env variables
         uses: cardinalby/export-env-action@v2
