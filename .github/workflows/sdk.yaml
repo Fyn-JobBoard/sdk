@@ -105,9 +105,9 @@ jobs:
       - name: Generates sdk
         uses: bjerkio/swagger-codegen-action@master
         with:
-          args: \
-            -i http://localhost:${{env.FAKE_APP_PORT}}/docs-json \
-            -o sdk \
+          args:
+            -i http://localhost:${{env.FAKE_APP_PORT}}/docs-json
+            -o sdk
             -l typescript
 
       - name: Exporting sdk to ${{needs.check-version.outputs.target_version}}
