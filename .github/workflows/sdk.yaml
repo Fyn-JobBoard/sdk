@@ -34,7 +34,7 @@ jobs:
       same_version: ${{steps.incomming.outputs.VERSION == steps.current.outputs.VERSION}}
       target_version: ${{steps.incomming.outputs.VERSION}}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           ref: main
       - id: current
@@ -43,7 +43,7 @@ jobs:
           then
             echo "VERSION=$(jq .version -r ./package.json)" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           repository: ${{env.API_REPOSITORY}}
           ref: ${{env.API_BRANCH}}
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ! needs.check-version.outputs.same_version
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           repository: ${{env.API_REPOSITORY}}
           ref: ${{env.API_BRANCH}}
@@ -98,12 +98,16 @@ jobs:
           APP_PORT: ${{env.FAKE_APP_PORT}}
         run: bun start & sleep 2
 
+      - name: Debug SDK
+        run: |
+          curl http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
+
       - name: Generates sdk
         uses: bjerkio/swagger-codegen-action@master
         with:
-          args: |
-            -i http://localhost:${{env.FAKE_APP_PORT}}/docs-json
-            -o sdk
+          args: \
+            -i http://localhost:${{env.FAKE_APP_PORT}}/docs-json \
+            -o sdk \
             -l typescript
 
       - name: Exporting sdk to ${{needs.check-version.outputs.target_version}}
