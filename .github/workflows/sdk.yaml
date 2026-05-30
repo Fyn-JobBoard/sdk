@@ -59,6 +59,11 @@ jobs:
     needs: check-version
     runs-on: ubuntu-latest
     if: ! needs.check-version.outputs.same_version
+    services:
+      docker:
+        image: swaggerapi/swagger-codegen-cli
+        ports:
+          - "${{github.env.FAKE_APP_PORT}}:${{github.env.FAKE_APP_PORT}}"
     steps:
       - uses: actions/checkout@v6
         with:
@@ -105,8 +110,7 @@ jobs:
       - name: Generates sdk
         uses: bjerkio/swagger-codegen-action@master
         with:
-          args:
-            generate
+          args: generate
             -i "http://localhost:${{env.FAKE_APP_PORT}}/docs-json"
             -o sdk
             -l typescript-node
