@@ -118,6 +118,10 @@ jobs:
         run: |
           test -n "$(ls -A sdk)"
 
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
       - name: Create the package.json file
         run: |
           jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' .github/workflows/templates/package.json > sdk/package.json
