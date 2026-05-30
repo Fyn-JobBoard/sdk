@@ -67,11 +67,19 @@ jobs:
           ref: ${{env.API_BRANCH}}
           path: api
 
+      - name: Setup env variables
+        uses: cardinalby/export-env-action@v2
+        with:
+          # Exists in the api repository
+          envFile: "api/.github/workflows/ci.env"
+          expand: true
+          export: true
+
       # Used for postgres to access it
-      - name: Generate en_US.UTF-8 locale
-        run: |
-          sudo locale-gen en_US.UTF-8
-          sudo update-locale LANG=en_US.UTF-8
+      # - name: Generate en_US.UTF-8 locale
+      #   run: |
+      #     sudo locale-gen en_US.UTF-8
+      #     sudo update-locale LANG=en_US.UTF-8
 
       - name: Setup a postgres db
         uses: ikalnytskyi/action-setup-postgres@v8
@@ -83,14 +91,6 @@ jobs:
 
       - name: Installing bun
         uses: oven-sh/setup-bun@v2
-
-      - name: Setup env variables
-        uses: cardinalby/export-env-action@v2
-        with:
-          # Exists in the api repository
-          envFile: "api/.github/workflows/ci.env"
-          expand: true
-          export: true
 
       - name: Launching API
         run: |
@@ -104,7 +104,7 @@ jobs:
         run: |
           curl -f api.yaml http://localhost:${{env.FAKE_APP_PORT}}/docs-yaml
           curl -fso api.json http://localhost:${{env.FAKE_APP_PORT}}/docs-json
-      
+
       - name: Stopping API and preparing for SDK generation
         run: |
           kill $API_PID
