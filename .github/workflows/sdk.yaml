@@ -138,6 +138,7 @@ jobs:
 
       - name: Prepare for branch push
         run: |
+          # As we made some shift with git, at this point we reset it and re-connect to the sdk repository
           rm -rf .git
           git init
           git remote add origin ${{github.repositoryUrl}}
@@ -147,3 +148,5 @@ jobs:
         with:
           branch: v${{needs.check-version.outputs.target_version}}
           directory: sdk
+          # As HEAD will be detached of the main branch
+          force: true
