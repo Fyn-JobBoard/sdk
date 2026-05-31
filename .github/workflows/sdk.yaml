@@ -139,7 +139,7 @@ jobs:
           jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' templates/package.json > sdk/package.json
 
       - name: Exporting sdk to branch ${{needs.check-version.outputs.target_version}}
-        if: never() && needs.check-version.outputs.target_version != 'main'
+        if: false && needs.check-version.outputs.target_version != 'main'
         run: |
           cd sdk
           git init
