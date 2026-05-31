@@ -1,6 +1,12 @@
 # Fyn SDK Versions
 
-Currently no available versions.
+## Latest
+
+[0.1.3](https://github.com/Fyn-JobBoard/sdk/tree/0.1.3)
+
+## All
+
+- [0.1.3](https://github.com/Fyn-JobBoard/sdk/tree/0.1.3)
 
 ---
 
