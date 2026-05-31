@@ -138,17 +138,19 @@ jobs:
         run: |
           jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' templates/package.json > sdk/package.json
 
-      - name: Exporting sdk to branch ${{needs.check-version.outputs.target_version}}
-        # if: false && needs.check-version.outputs.target_version != 'main'
+      - name: Initialise git for sdk exportation
         run: |
           cd sdk
           git init
-          
 
-      - name: Commit & Push changes
+      - name: Exporting sdk to branch ${{needs.check-version.outputs.target_version}}
         uses: actions-js/push@master
+        if: needs.check-version.outputs.target_version != 'main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           directory: sdk
+          message: Fyn SDK v${{needs.check-version.outputs.target_version}}
           branch: ${{needs.check-version.outputs.target_version}}
           force: true
+          coauthor_email: ${{github.actor}}@users.noreply.github.com
+          coauthor_name: ${{github.actor}}
