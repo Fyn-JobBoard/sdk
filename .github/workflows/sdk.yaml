@@ -139,7 +139,7 @@ jobs:
           jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' templates/package.json > sdk/package.json
 
       - name: Exporting sdk to branch ${{needs.check-version.outputs.target_version}}
-        if: needs.check-version.outputs.target_version != 'main'
+        if: never() && needs.check-version.outputs.target_version != 'main'
         run: |
           cd sdk
           git init
@@ -153,8 +153,11 @@ jobs:
           git commit -m "Updating sdk version to ${{needs.check-version.outputs.target_version}}"
           # git push origin ${{needs.check-version.outputs.target_version}}
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+
+      - name: Commit & Push changes
+        uses: actions-js/push@master
         with:
-          force_with_lease: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          directory: sdk
           branch: ${{needs.check-version.outputs.target_version}}
+          force: true
