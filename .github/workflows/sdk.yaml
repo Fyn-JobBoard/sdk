@@ -151,4 +151,10 @@ jobs:
 
           git add .
           git commit -m "Updating sdk version to ${{needs.check-version.outputs.target_version}}"
-          git push origin ${{needs.check-version.outputs.target_version}}
+          # git push origin ${{needs.check-version.outputs.target_version}}
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          force_with_lease: true
+          branch: ${{needs.check-version.outputs.target_version}}
