@@ -145,7 +145,7 @@ jobs:
         env:
           VERSION: ${{needs.check-version.outputs.target_version}}
         run: |
-          envsubst < ./.github/workflows/templates/readme.md > sdk/readme.md
+          envsubst < templates/readme.md > sdk/readme.md
 
       - name: Initialise git for sdk exportation
         run: |
