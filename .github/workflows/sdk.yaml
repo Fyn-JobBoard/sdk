@@ -20,6 +20,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .github/**/*
 
 env:
   API_REPOSITORY: Fyn-JobBoard/api
@@ -60,7 +62,8 @@ jobs:
     name: Generate the sdk for version ${{needs.check-version.outputs.target_version}}
     needs: check-version
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      contents: write
     if: ! needs.check-version.outputs.same_version
     steps:
       - uses: actions/checkout@v6
@@ -137,6 +140,12 @@ jobs:
       - name: Create the package.json file
         run: |
           jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' templates/package.json > sdk/package.json
+      
+      - name: Create the readme.md file
+        env:
+          VERSION: ${{needs.check-version.outputs.target_version}}
+        run: |
+          envsubst < ./.github/workflows/templates/readme.md > sdk/readme.md
 
       - name: Initialise git for sdk exportation
         run: |

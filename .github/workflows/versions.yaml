@@ -1,0 +1,33 @@
+name: Generate the versions.md file
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  generate:
+    name: Generate the versions.md file
+    runs-on: ubuntu-slim
+    permissions:
+      contents: write
+    steps:
+      - name: List branches
+        run: |
+          readarray -t REMOTE_BRANCHES < <(git branch --remotes)
+
+          VERSION_BRANCHES=()
+
+          for branch in ${REMOTE_BRANCHES[@]};
+          do
+            VERSION=$(echo $branch | sed 's/origin\///')
+
+            if [ "$VERSION" = "main" ];
+            then
+              continue
+            fi
+            
+            VERSION_BRANCHES+=($VERSION)
+          done
+
+          echo ${VERSION_BRANCHES[@]} >> $GITHUB_ENV
