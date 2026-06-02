@@ -164,6 +164,13 @@ jobs:
           coauthor_email: ${{github.actor}}@users.noreply.github.com
           coauthor_name: ${{github.actor}}
 
+  post-process:
+    runs-on: ubuntu-slim
+    name: Post sdk generation
+    needs: generate-sdk
+    permissions:
+      actions: write
+    steps:
       - name: Triggering the versions.md updater
         uses: benc-uk/workflow-dispatch@main
         with:
