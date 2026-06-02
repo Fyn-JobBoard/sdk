@@ -1,6 +1,7 @@
 name: Generate the versions.md file
 
 on:
+  workflow_call:
   push:
     branches-ignore:
       - main
@@ -12,22 +13,17 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
       - name: List branches
-        run: |
-          readarray -t REMOTE_BRANCHES < <(git branch --remotes)
+        env:
+          GITHUB_REPOSITORY_URL: ${{github.server_url}}/${{github.repository}}
+        run: ./.github/workflows/scripts/gen_versions.md.sh .github/workflows/templates/versions.md versions.md
 
-          VERSION_BRANCHES=()
-
-          for branch in ${REMOTE_BRANCHES[@]};
-          do
-            VERSION=$(echo $branch | sed 's/origin\///')
-
-            if [ "$VERSION" = "main" ];
-            then
-              continue
-            fi
-            
-            VERSION_BRANCHES+=($VERSION)
-          done
-
-          echo ${VERSION_BRANCHES[@]} >> $GITHUB_ENV
+      - name: Push modifications
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main

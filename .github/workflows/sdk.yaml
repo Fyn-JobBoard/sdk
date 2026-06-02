@@ -140,7 +140,7 @@ jobs:
       - name: Create the package.json file
         run: |
           jq '. += {"version":"${{needs.check-version.outputs.target_version}}"}' templates/package.json > sdk/package.json
-      
+
       - name: Create the readme.md file
         env:
           VERSION: ${{needs.check-version.outputs.target_version}}
@@ -163,3 +163,6 @@ jobs:
           force: true
           coauthor_email: ${{github.actor}}@users.noreply.github.com
           coauthor_name: ${{github.actor}}
+
+      - name: Triggering the versions.md updater
+        uses: ./.github/workflows/versions.yaml
