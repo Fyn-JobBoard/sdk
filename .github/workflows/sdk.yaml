@@ -165,4 +165,6 @@ jobs:
           coauthor_name: ${{github.actor}}
 
       - name: Triggering the versions.md updater
-        uses: ./.github/workflows/versions.yaml
+        uses: benc-uk/workflow-dispatch@main
+        with:
+          workflow: versions.yaml
