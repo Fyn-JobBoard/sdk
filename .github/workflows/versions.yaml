@@ -9,7 +9,7 @@ on:
 jobs:
   generate:
     name: Generate the versions.md file
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
