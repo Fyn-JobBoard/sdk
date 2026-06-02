@@ -26,9 +26,9 @@ then
 fi
 
 # Prepare for the template's variables
-LAST_UPDATE_DATE=$(date -R)
-VERSIONS=""
-LATEST="No latest version"
+export LAST_UPDATE_DATE=$(date -R)
+export VERSIONS=""
+export LATEST="No latest version"
 
 if [ -z "$GITHUB_REPOSITORY_URL" ];
 then
