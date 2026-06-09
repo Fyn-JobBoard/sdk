@@ -30,22 +30,11 @@ env:
 
 jobs:
   check-version:
-    name: Verify versions
+    name: Get incomming version
     runs-on: ubuntu-slim
     outputs:
-      same_version: ${{steps.incomming.outputs.VERSION == steps.current.outputs.VERSION}}
       target_version: ${{steps.incomming.outputs.VERSION}}
     steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: main
-      - name: Check latest current version
-        id: current
-        run: |
-          if [ -f "./package.json" ];
-          then
-            echo "VERSION=$(jq .version -r ./package.json)" >> $GITHUB_OUTPUT
-          fi
       - uses: actions/checkout@v6
         with:
           repository: ${{env.API_REPOSITORY}}
@@ -64,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    if: ! needs.check-version.outputs.same_version
+    if: needs.check-version.outputs.target_version
     steps:
       - uses: actions/checkout@v6
         with:
@@ -117,6 +106,7 @@ jobs:
             -i ./api.json
             -o sdk
             -l typescript-fetch
+            --additional-properties modelPropertyNaming=snake_case
             --release-note "API Version: ${{needs.check-version.outputs.target_version}}"'
 
       - name: Ensure sdk has been generated
