@@ -1,0 +1,13 @@
+{
+  "name": "fyn-api-sdk",
+  "description": "The fyn's API SDK",
+  "main": "./index.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fyn-JobBoard/sdk"
+  },
+  "dependencies": {
+    "isomorphic-fetch": "^3.0.0"
+  },
+  "version": "1.0.0"
+}
