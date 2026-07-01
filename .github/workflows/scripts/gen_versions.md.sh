@@ -54,7 +54,7 @@ echo ${VERSIONS@E}
 
 if [ -f "$1" -a -n "$2" ];
 then
-  envsubst < $1 > $2
+  printf $(envsubst < $1) > $2
 else
   echo "::warning::Invalid template and/or output paths (received: '$1' (template) and '$2' (output))"
 fi
